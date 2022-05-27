@@ -1,5 +1,7 @@
 package org.university;
 
+import org.flywaydb.core.Flyway;
+
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -9,12 +11,11 @@ public class DB {
     public static final String DB_USER = "";
     public static final String DB_PASSWORD = "";
 
-    public static void selectAllStudents() throws SQLException {
+    public void selectAllStudents() throws SQLException {
         Connection connection = getDBConnection();
         String SelectQuery = "select * from Student";
         PreparedStatement selectPreparedStatement = connection.prepareStatement(SelectQuery);
         ResultSet rs = selectPreparedStatement.executeQuery();
-        StringBuilder sb = new StringBuilder();
         while (rs.next()) {
             System.out.println(rs.getInt("id") + " " + rs.getString("name") + " "
                     + rs.getString("surname") + " " + rs.getString("middleName") + " "
@@ -23,7 +24,7 @@ public class DB {
         selectPreparedStatement.close();
     }
 
-    public static void deleteStudentById(int id) {
+    public void deleteStudentById(int id) {
         Connection connection = getDBConnection();
         String SelectQuery = "DELETE from Student WHERE ID = (?)";
         try {
@@ -38,7 +39,7 @@ public class DB {
         }
     }
 
-    public static void createNewStudent(String name, String surname, String middleName, LocalDate birthDate, String groupNumber) {
+    public void createNewStudent(String name, String surname, String middleName, LocalDate birthDate, String groupNumber) {
         Connection connection = getDBConnection();
         String insertQuery = "INSERT INTO Student VALUES (?, ?, ?, ?, ?, ?)";
         try {
@@ -60,7 +61,7 @@ public class DB {
         }
     }
 
-    private static int getRowCount() {
+    private int getRowCount() {
         Connection connection = getDBConnection();
         String selectQuery = "SELECT MAX(id) AS max_id FROM Student";
         int count = 0;
@@ -77,7 +78,7 @@ public class DB {
         return count;
     }
 
-    private static Connection getDBConnection() {
+    private Connection getDBConnection() {
         Connection dbConnection = null;
         try {
             Class.forName(DB_DRIVER);
@@ -91,5 +92,13 @@ public class DB {
             System.out.println(e.getMessage());
         }
         return dbConnection;
+    }
+
+    public void migrateFlyway() {
+        Flyway flyway = Flyway.configure()
+                .dataSource(DB_CONNECTION, DB_USER, DB_PASSWORD)
+                .locations("db/migration")
+                .load();
+        flyway.migrate();
     }
 }
