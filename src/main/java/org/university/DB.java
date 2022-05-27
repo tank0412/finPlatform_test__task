@@ -14,21 +14,24 @@ public class DB {
     public void selectAllStudents() throws SQLException {
         Connection connection = getDBConnection();
         String SelectQuery = "select * from Student";
-        PreparedStatement selectPreparedStatement = connection.prepareStatement(SelectQuery);
-        ResultSet rs = selectPreparedStatement.executeQuery();
-        while (rs.next()) {
-            System.out.println(rs.getInt("id") + " " + rs.getString("name") + " "
-                    + rs.getString("surname") + " " + rs.getString("middleName") + " "
-                    + rs.getString("birthdate") + " " + rs.getString("studentGroup") + " ");
+        try (PreparedStatement selectPreparedStatement = connection.prepareStatement(SelectQuery)) {
+            ResultSet rs = selectPreparedStatement.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + " " + rs.getString("name") + " "
+                        + rs.getString("surname") + " " + rs.getString("middleName") + " "
+                        + rs.getString("birthdate") + " " + rs.getString("studentGroup") + " ");
+            }
         }
-        selectPreparedStatement.close();
+        catch (SQLException e) {
+            System.out.println("FAIL!");
+            e.printStackTrace();
+        }
     }
 
     public void deleteStudentById(int id) {
         Connection connection = getDBConnection();
         String SelectQuery = "DELETE from Student WHERE ID = (?)";
-        try {
-            PreparedStatement deletePreparedStatement = connection.prepareStatement(SelectQuery);
+        try (PreparedStatement deletePreparedStatement = connection.prepareStatement(SelectQuery)) {
             deletePreparedStatement.setInt(1, id);
             int count = deletePreparedStatement.executeUpdate();
             if (count > 0) {
@@ -42,8 +45,7 @@ public class DB {
     public void createNewStudent(String name, String surname, String middleName, LocalDate birthDate, String groupNumber) {
         Connection connection = getDBConnection();
         String insertQuery = "INSERT INTO Student VALUES (?, ?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement insertPreparedStatement = connection.prepareStatement(insertQuery);
+        try(PreparedStatement insertPreparedStatement = connection.prepareStatement(insertQuery);) {
             int newId = getRowCount() + 1;
             insertPreparedStatement.setInt(1, newId);
             insertPreparedStatement.setNString(2, name);
@@ -56,7 +58,11 @@ public class DB {
             if (count > 0) {
                 System.out.println("SUCCESS!");
             }
+            else {
+                System.out.println("FAIL!");
+            }
         } catch (SQLException e) {
+            System.out.println("FAIL!");
             e.printStackTrace();
         }
     }
@@ -65,13 +71,13 @@ public class DB {
         Connection connection = getDBConnection();
         String selectQuery = "SELECT MAX(id) AS max_id FROM Student";
         int count = 0;
-        try {
-            PreparedStatement deletePreparedStatement = connection.prepareStatement(selectQuery);
+        try(PreparedStatement deletePreparedStatement = connection.prepareStatement(selectQuery);) {
             ResultSet rs = deletePreparedStatement.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 count = rs.getInt("max_id") + 1;
             }
         } catch (SQLException e) {
+            System.out.println("FAIL!");
             e.printStackTrace();
             return count;
         }
