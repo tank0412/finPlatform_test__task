@@ -1,6 +1,7 @@
 package org.university;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 public class DB {
     private static final String DB_DRIVER = "org.h2.Driver";
@@ -35,6 +36,45 @@ public class DB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void createNewStudent(String name, String surname, String middleName, LocalDate birthDate, String groupNumber) {
+        Connection connection = getDBConnection();
+        String insertQuery = "INSERT INTO Student VALUES (?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement insertPreparedStatement = connection.prepareStatement(insertQuery);
+            int newId = getRowCount() + 1;
+            insertPreparedStatement.setInt(1, newId);
+            insertPreparedStatement.setNString(2, name);
+            insertPreparedStatement.setNString(3, surname);
+            insertPreparedStatement.setNString(4, middleName);
+            insertPreparedStatement.setDate(5, Date.valueOf(birthDate));
+            insertPreparedStatement.setNString(6, groupNumber);
+
+            int count = insertPreparedStatement.executeUpdate();
+            if (count > 0) {
+                System.out.println("SUCCESS!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int getRowCount() {
+        Connection connection = getDBConnection();
+        String selectQuery = "SELECT MAX(id) AS max_id FROM Student";
+        int count = 0;
+        try {
+            PreparedStatement deletePreparedStatement = connection.prepareStatement(selectQuery);
+            ResultSet rs = deletePreparedStatement.executeQuery();
+            if(rs.next()) {
+                count = rs.getInt("max_id") + 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return count;
+        }
+        return count;
     }
 
     private static Connection getDBConnection() {
