@@ -16,10 +16,25 @@ public class DB {
         StringBuilder sb = new StringBuilder();
         while (rs.next()) {
             System.out.println(rs.getInt("id") + " " + rs.getString("name") + " "
-                    + rs.getString("surname")+ " " + rs.getString("middleName") + " "
-                    + rs.getString("birthdate")+ " " + rs.getString("studentGroup")+ " ");
+                    + rs.getString("surname") + " " + rs.getString("middleName") + " "
+                    + rs.getString("birthdate") + " " + rs.getString("studentGroup") + " ");
         }
         selectPreparedStatement.close();
+    }
+
+    public static void deleteStudentById(int id) {
+        Connection connection = getDBConnection();
+        String SelectQuery = "DELETE from Student WHERE ID = (?)";
+        try {
+            PreparedStatement deletePreparedStatement = connection.prepareStatement(SelectQuery);
+            deletePreparedStatement.setInt(1, id);
+            int count = deletePreparedStatement.executeUpdate();
+            if (count > 0) {
+                System.out.println("SUCCESS!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static Connection getDBConnection() {
