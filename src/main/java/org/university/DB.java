@@ -37,6 +37,9 @@ public class DB {
             if (count > 0) {
                 System.out.println("SUCCESS!");
             }
+            else {
+                System.out.println("Student with this ID does not exist.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
