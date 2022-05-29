@@ -18,13 +18,14 @@ public class Input {
 
     public void processDeleteChoice(Scanner scanner) {
         System.out.println("Print student id");
-        String studentId = scanner.next();
-        int id = 0;
-        try {
-            id = Integer.parseInt(studentId);
-        } catch (Exception e) {
-            System.out.println("Incorrect input");
-            return;
+        Integer id = null;
+        while (id == null) {
+            try {
+                String studentId = scanner.next();
+                id = Integer.parseInt(studentId);
+            } catch (Exception e) {
+                System.out.println("Incorrect input");
+            }
         }
         db.deleteStudentById(id);
     }
