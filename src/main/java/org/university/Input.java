@@ -43,6 +43,11 @@ public class Input {
             try {
                 String studentBirthDate = scanner.next();
                 localDate = LocalDate.parse(studentBirthDate);
+                if (localDate.isAfter(LocalDate.now())) {
+                    //impossible
+                    System.out.println("Inputed date can not be after today's date! Try again!");
+                    localDate = null;
+                }
             } catch (Exception e) {
                 System.out.println("Incorrect date input! Try again!");
             }
