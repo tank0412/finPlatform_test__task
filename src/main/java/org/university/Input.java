@@ -38,14 +38,14 @@ public class Input {
         String middleName = scanner.next();
 
         System.out.println("Print student birth date in a format: 2017-01-13");
-        String studentBirthDate = scanner.next();
         LocalDate localDate = null;
-        try {
-            localDate = LocalDate.parse(studentBirthDate);
-        }
-        catch (Exception e) {
-            System.out.println("Incorrect input! Returning....");
-            return;
+        while (localDate == null) {
+            try {
+                String studentBirthDate = scanner.next();
+                localDate = LocalDate.parse(studentBirthDate);
+            } catch (Exception e) {
+                System.out.println("Incorrect date input! Try again!");
+            }
         }
 
         System.out.println("Print student group number");
